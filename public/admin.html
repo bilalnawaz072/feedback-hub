@@ -1,96 +1,686 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vouch admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-<style>
-  :root { --paper:#f7f4ec; --ink:#1f2420; --forest:#2f6b4f; --line:#e2ddd0; --muted:#7a7568; --gold:#c9a227; --card:#fffdf8; --red:#b4462f; }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--paper); color:var(--ink); font-family:"Inter",sans-serif; padding:32px 20px; }
-  .wrap { max-width:820px; margin:0 auto; }
-  h1 { font-family:"Newsreader",serif; font-weight:500; font-size:28px; }
-  .muted { color:var(--muted); font-size:14px; }
-  .login { max-width:360px; margin:80px auto 0; text-align:center; }
-  .login input { width:100%; border:1px solid var(--line); border-radius:9px; padding:13px; font-size:15px; margin:18px 0 10px; background:var(--card); }
-  button { background:var(--forest); color:#fff; border:none; border-radius:9px; padding:12px 18px; font-weight:600; cursor:pointer; font-size:14px; }
-  .login button { width:100%; }
-  .err { color:var(--red); font-size:13px; min-height:18px; margin-top:6px; }
-  .dash { display:none; }
-  .stat { font-family:"Newsreader",serif; font-size:34px; color:var(--forest); margin:8px 0 24px; }
-  .row { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:12px; }
-  .row .top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-  .row .stars { color:var(--gold); font-size:14px; }
-  .row .who { font-weight:600; font-size:14px; margin:2px 0 8px; }
-  .row .quote { font-size:14px; line-height:1.5; color:#3a3a33; }
-  .actions { display:flex; gap:8px; flex-shrink:0; }
-  .btn-sm { padding:7px 12px; font-size:12px; border-radius:7px; border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer; }
-  .btn-sm.on { background:var(--forest); color:#fff; border-color:var(--forest); }
-  .btn-sm.del { color:var(--red); border-color:#e6c9c0; }
-  .badge { font-size:11px; font-weight:600; padding:3px 8px; border-radius:20px; }
-  .badge.live { background:#e2f0e8; color:var(--forest); }
-  .badge.pending { background:#f0ece0; color:var(--muted); }
-  .empty { text-align:center; color:var(--muted); padding:40px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vouch admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* Color Palette Themes */
+    :root {
+      --paper: #f7f4ec;
+      --ink: #1f2420;
+      --forest: #2f6b4f;
+      --forest-dark: #245740;
+      --line: #e2ddd0;
+      --muted: #7a7568;
+      --gold: #c9a227;
+      --card: #fffdf8;
+      --red: #b4462f;
+      --red-hover: #9c3b27;
+      --shadow: rgba(47, 107, 79, 0.05);
+      --border-radius: 16px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --paper: #0f172a;
+      --ink: #f8fafc;
+      --forest: #10b981;
+      --forest-dark: #059669;
+      --line: #334155;
+      --muted: #94a3b8;
+      --gold: #fbbf24;
+      --card: #1e293b;
+      --red: #f87171;
+      --red-hover: #ef4444;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="forest"] {
+      --paper: #f0fdf4;
+      --ink: #14532d;
+      --forest: #16a34a;
+      --forest-dark: #15803d;
+      --line: #bbf7d0;
+      --muted: #166534;
+      --gold: #ca8a04;
+      --card: #ffffff;
+      --red: #dc2626;
+      --red-hover: #b91c1c;
+      --shadow: rgba(22, 163, 74, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+      padding: 32px 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* Header & Action Bar */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-family: "Newsreader", serif;
+      font-weight: 500;
+      font-size: 32px;
+    }
+
+    .theme-select {
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .theme-select:hover {
+      border-color: var(--forest);
+    }
+
+    /* Login Panel */
+    .login {
+      max-width: 360px;
+      margin: 100px auto 0;
+      text-align: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--border-radius);
+      padding: 32px;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .login h1 {
+      margin-bottom: 8px;
+      font-size: 28px;
+    }
+
+    .login p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .login input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      margin-bottom: 16px;
+      background: var(--paper);
+      color: var(--ink);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .login input:focus {
+      border-color: var(--forest);
+    }
+
+    .login button {
+      width: 100%;
+      padding: 14px;
+    }
+
+    button {
+      background: var(--forest);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--forest-dark);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .err {
+      color: var(--red);
+      font-size: 13px;
+      min-height: 18px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* Dashboard Content */
+    .dash {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* Analytics Widget */
+    .analytics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .analytics-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .analytics-label {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .analytics-val {
+      font-family: "Newsreader", serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--forest);
+    }
+
+    /* Filters & Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .controls input,
+    .controls select {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .controls input {
+      flex-grow: 1;
+      min-width: 200px;
+    }
+
+    .controls input:focus,
+    .controls select:focus {
+      border-color: var(--forest);
+    }
+
+    /* Feedback Row Card */
+    .row {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: var(--transition);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .row:hover {
+      border-color: var(--forest);
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .row .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .row .stars {
+      color: var(--gold);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .row .who {
+      font-weight: 600;
+      font-size: 15px;
+      margin: 2px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .row .quote {
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: var(--ink);
+      font-style: italic;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-sm.on {
+      background: var(--forest);
+      color: #fff;
+      border-color: var(--forest);
+    }
+
+    .btn-sm.on:hover {
+      background: var(--forest-dark);
+    }
+
+    .btn-sm.del {
+      color: var(--red);
+      border-color: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .btn-sm.del:hover {
+      background: var(--red);
+      color: white;
+      border-color: var(--red);
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .badge.live {
+      background: #e2f0e8;
+      color: var(--forest);
+    }
+
+    [data-theme="dark"] .badge.live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .badge.pending {
+      background: #f0ece0;
+      color: var(--muted);
+    }
+
+    [data-theme="dark"] .badge.pending {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--muted);
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 50px;
+      font-size: 15px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-left: 4px solid var(--forest);
+      border-radius: 8px;
+      padding: 16px 20px;
+      min-width: 280px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      transform: translateX(120%);
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.err {
+      border-left-color: #ef4444;
+    }
+
+    .toast-close {
+      cursor: pointer;
+      color: var(--muted);
+      margin-left: 12px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .toast-close:hover {
+      color: var(--ink);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="login" id="login">
-    <h1>Vouch admin</h1>
-    <p class="muted">Enter your admin password.</p>
-    <input type="password" id="pw" placeholder="Admin password" />
-    <button id="loginBtn">Open dashboard</button>
-    <div class="err" id="loginErr"></div>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="wrap">
+    <div class="header">
+      <h1>Vouch admin</h1>
+      <select class="theme-select" id="themeSelect" aria-label="Select Theme">
+        <option value="warm">☀️ Warm Paper</option>
+        <option value="dark">🌙 Midnight Slate</option>
+        <option value="forest">🌲 Emerald Forest</option>
+      </select>
+    </div>
+
+    <div class="login" id="login">
+      <h1>Welcome back</h1>
+      <p>Enter your admin password to open dashboard.</p>
+      <input type="password" id="pw" placeholder="Admin password" />
+      <button id="loginBtn">Open dashboard</button>
+      <div class="err" id="loginErr"></div>
+    </div>
+
+    <div class="dash" id="dash">
+      <!-- Analytics Section -->
+      <div class="analytics">
+        <div class="analytics-card">
+          <div class="analytics-label">Total Feedback</div>
+          <div class="analytics-val" id="statTotal">0</div>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-label">Average Rating</div>
+          <div class="analytics-val" id="statAvg">0.0</div>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-label">Approval Rate</div>
+          <div class="analytics-val" id="statApproval">0%</div>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search by name, role or message..." />
+
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="approved">Published (On Wall)</option>
+          <option value="pending">Pending</option>
+        </select>
+
+        <select id="ratingFilter">
+          <option value="all">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+      </div>
+
+      <div id="list"></div>
+    </div>
   </div>
-  <div class="dash" id="dash">
-    <h1>Feedback</h1>
-    <div class="stat" id="count">0</div>
-    <div id="list"></div>
-  </div>
-</div>
-<script>
-  let token = "";
-  document.getElementById("loginBtn").addEventListener("click", login);
-  document.getElementById("pw").addEventListener("keydown", e => { if (e.key==="Enter") login(); });
-  async function login() {
-    const pw = document.getElementById("pw").value;
-    const err = document.getElementById("loginErr"); err.textContent="";
-    try {
-      const res = await fetch("/api/admin/feedback", { headers:{Authorization:"Bearer "+pw} });
-      if (res.status===401) { err.textContent="Wrong password."; return; }
-      token = pw;
-      render(await res.json());
-      document.getElementById("login").style.display="none";
-      document.getElementById("dash").style.display="block";
-    } catch { err.textContent="Could not connect."; }
-  }
-  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-  function starRow(n){ return "★".repeat(n)+"☆".repeat(5-n); }
-  function render(data) {
-    document.getElementById("count").textContent = data.total + " total";
-    const list = document.getElementById("list");
-    if (!data.feedback.length) { list.innerHTML='<div class="empty">No feedback yet.</div>'; return; }
-    list.innerHTML = data.feedback.map(f => `
+
+  <script>
+    let token = "";
+    let feedbackData = [];
+
+    // Theme Management
+    const themeSelect = document.getElementById("themeSelect");
+    const currentTheme = localStorage.getItem("vouch-theme") || "warm";
+    setTheme(currentTheme);
+    themeSelect.value = currentTheme;
+
+    themeSelect.addEventListener("change", (e) => {
+      setTheme(e.target.value);
+    });
+
+    function setTheme(theme) {
+      if (theme === "warm") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+      localStorage.setItem("vouch-theme", theme);
+    }
+
+    // Toast Notification System
+    function showToast(message, isError = false) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${isError ? 'err' : ''}`;
+      toast.innerHTML = `
+      <span>${message}</span>
+      <span class="toast-close">&times;</span>
+    `;
+      container.appendChild(toast);
+
+      setTimeout(() => toast.classList.add("show"), 10);
+
+      const dismiss = () => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+      };
+
+      toast.querySelector(".toast-close").addEventListener("click", dismiss);
+      setTimeout(dismiss, 4000);
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+
+    async function login() {
+      const pw = document.getElementById("pw").value;
+      const err = document.getElementById("loginErr"); err.textContent = "";
+      try {
+        const res = await fetch("/api/admin/feedback", { headers: { Authorization: "Bearer " + pw } });
+        if (res.status === 401) { err.textContent = "Wrong password."; showToast("Incorrect password.", true); return; }
+        token = pw;
+        const data = await res.json();
+        feedbackData = data.feedback || [];
+        render();
+        document.getElementById("login").style.display = "none";
+        document.getElementById("dash").style.display = "block";
+        showToast("Access granted. Dashboard loaded.");
+      } catch {
+        err.textContent = "Could not connect.";
+        showToast("Connection failed.", true);
+      }
+    }
+
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+    function starRow(n) { return "★".repeat(n) + "☆".repeat(5 - n); }
+
+    // Filter & Search Function
+    function getFilteredFeedback() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const statusFilter = document.getElementById("statusFilter").value;
+      const ratingFilter = document.getElementById("ratingFilter").value;
+
+      return feedbackData.filter(f => {
+        const matchesSearch = f.name.toLowerCase().includes(query) ||
+          (f.role && f.role.toLowerCase().includes(query)) ||
+          f.message.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === "all" ||
+          (statusFilter === "approved" && f.approved) ||
+          (statusFilter === "pending" && !f.approved);
+        const matchesRating = ratingFilter === "all" || f.rating === parseInt(ratingFilter, 10);
+
+        return matchesSearch && matchesStatus && matchesRating;
+      });
+    }
+
+    function render() {
+      // Render Stats
+      const total = feedbackData.length;
+      const approvedCount = feedbackData.filter(f => f.approved).length;
+      const sumRating = feedbackData.reduce((acc, f) => acc + f.rating, 0);
+      const avgRating = total > 0 ? (sumRating / total).toFixed(1) : "0.0";
+      const approvalRate = total > 0 ? Math.round((approvedCount / total) * 100) : 0;
+
+      document.getElementById("statTotal").textContent = total;
+      document.getElementById("statAvg").textContent = avgRating;
+      document.getElementById("statApproval").textContent = `${approvalRate}%`;
+
+      const filtered = getFilteredFeedback();
+      const list = document.getElementById("list");
+
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">No matching feedback found.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(f => `
       <div class="row">
         <div class="top">
           <div style="flex:1">
             <div class="stars">${starRow(f.rating)}</div>
-            <div class="who">${esc(f.name)}${f.role?" — "+esc(f.role):""} <span class="badge ${f.approved?'live':'pending'}">${f.approved?'On wall':'Pending'}</span></div>
+            <div class="who">
+              <span>${esc(f.name)}</span>
+              ${f.role ? `<span style="font-weight:400; color:var(--muted)">— ${esc(f.role)}</span>` : ""}
+              <span class="badge ${f.approved ? 'live' : 'pending'}">${f.approved ? 'On wall' : 'Pending'}</span>
+            </div>
             <div class="quote">"${esc(f.message)}"</div>
           </div>
           <div class="actions">
-            <button class="btn-sm ${f.approved?'on':''}" onclick="toggle(${f.id}, ${!f.approved})">${f.approved?'Unpublish':'Approve'}</button>
+            <button class="btn-sm ${f.approved ? 'on' : ''}" onclick="toggle(${f.id}, ${!f.approved})">${f.approved ? 'Unpublish' : 'Approve'}</button>
             <button class="btn-sm del" onclick="del(${f.id})">Delete</button>
           </div>
         </div>
       </div>`).join("");
-  }
-  async function reload() { const res = await fetch("/api/admin/feedback",{headers:{Authorization:"Bearer "+token}}); render(await res.json()); }
-  async function toggle(id, approved) { await fetch("/api/admin/approve",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({id,approved})}); reload(); }
-  async function del(id) { if(!confirm("Delete this feedback?"))return; await fetch("/api/admin/delete",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({id})}); reload(); }
-  window.toggle = toggle; window.del = del;
-</script>
+    }
+
+    // Hook filters to render
+    document.getElementById("searchInput").addEventListener("input", render);
+    document.getElementById("statusFilter").addEventListener("change", render);
+    document.getElementById("ratingFilter").addEventListener("change", render);
+
+    async function reload() {
+      const res = await fetch("/api/admin/feedback", { headers: { Authorization: "Bearer " + token } });
+      const data = await res.json();
+      feedbackData = data.feedback || [];
+      render();
+    }
+
+    async function toggle(id, approved) {
+      try {
+        const res = await fetch("/api/admin/approve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ id, approved })
+        });
+        if (res.ok) {
+          showToast(approved ? "Feedback approved & published." : "Feedback unpublished.");
+          reload();
+        } else {
+          showToast("Failed to update status.", true);
+        }
+      } catch {
+        showToast("Network error.", true);
+      }
+    }
+
+    async function del(id) {
+      if (!confirm("Delete this feedback forever?")) return;
+      try {
+        const res = await fetch("/api/admin/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ id })
+        });
+        if (res.ok) {
+          showToast("Feedback deleted successfully.");
+          reload();
+        } else {
+          showToast("Failed to delete feedback.", true);
+        }
+      } catch {
+        showToast("Network error.", true);
+      }
+    }
+
+    window.toggle = toggle; window.del = del;
+  </script>
 </body>
+
 </html>
