@@ -1,0 +1,11 @@
+{
+  "name": "feedback-hub",
+  "version": "1.0.0", 
+  "description": "A self-hosted application for collecting and displaying user feedback.", 
+  "main": "server.js",
+  "type": "module",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "express": "^4.19.2", "pg": "^8.12.0" },
+  "license": "MIT"
+}

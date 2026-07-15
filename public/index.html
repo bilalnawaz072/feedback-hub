@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Share your feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f7f4ec; --ink: #1f2420; --forest: #2f6b4f; --forest-dark: #245740;
+    --line: #e2ddd0; --muted: #7a7568; --gold: #c9a227; --card: #fffdf8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: "Inter", sans-serif; padding: 40px 20px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--forest); font-weight: 600; margin-bottom: 12px; text-align: center; }
+  h1 { font-family: "Newsreader", serif; font-weight: 500; font-size: 34px; text-align: center; margin-bottom: 8px; }
+  .lead { text-align: center; color: var(--muted); margin-bottom: 32px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px; margin-bottom: 40px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; margin-top: 16px; }
+  label:first-child { margin-top: 0; }
+  input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 12px 13px; font-size: 15px; font-family: inherit; background: var(--paper); color: var(--ink); }
+  input:focus, textarea:focus { outline: none; border-color: var(--forest); }
+  textarea { resize: vertical; min-height: 90px; }
+  .stars { display: flex; gap: 6px; margin-top: 6px; }
+  .star { font-size: 30px; color: var(--line); cursor: pointer; transition: color 0.15s; line-height: 1; }
+  .star.on { color: var(--gold); }
+  button { margin-top: 22px; width: 100%; background: var(--forest); color: #fff; border: none; border-radius: 9px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  button:hover { background: var(--forest-dark); }
+  button:disabled { opacity: 0.6; }
+  .msg { text-align: center; font-size: 14px; min-height: 18px; margin-top: 12px; }
+  .msg.ok { color: var(--forest); } .msg.err { color: #b4462f; }
+  .thanks { display: none; text-align: center; padding: 30px 0; }
+  .thanks.show { display: block; }
+  .thanks .big { font-family: "Newsreader", serif; font-size: 26px; margin-bottom: 8px; }
+  .wall-title { font-family: "Newsreader", serif; font-size: 22px; text-align: center; margin-bottom: 20px; }
+  .t { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+  .t .stars-static { color: var(--gold); font-size: 15px; margin-bottom: 8px; }
+  .t .quote { font-family: "Newsreader", serif; font-size: 17px; line-height: 1.5; margin-bottom: 10px; }
+  .t .who { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow" id="eyebrow">Feedback</div>
+  <h1 id="headline">How was your experience?</h1>
+  <p class="lead">Your words help others decide. Thank you for sharing them.</p>
+
+  <div class="card" id="formCard">
+    <div id="form">
+      <label>Your name</label>
+      <input type="text" id="name" placeholder="Jane Doe" />
+      <label>Role or company <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+      <input type="text" id="role" placeholder="Founder, Acme Co." />
+      <label>Rating</label>
+      <div class="stars" id="stars">
+        <span class="star" data-v="1">&#9733;</span><span class="star" data-v="2">&#9733;</span><span class="star" data-v="3">&#9733;</span><span class="star" data-v="4">&#9733;</span><span class="star" data-v="5">&#9733;</span>
+      </div>
+      <label style="margin-top:16px">Your feedback</label>
+      <textarea id="message" placeholder="What did you like? What could be better?"></textarea>
+      <button id="submit">Share feedback</button>
+      <div class="msg" id="msg"></div>
+    </div>
+    <div class="thanks" id="thanks">
+      <div class="big">Thank you! 🌿</div>
+      <div style="color:var(--muted)">Your feedback has been received. It may appear on the wall once reviewed.</div>
+    </div>
+  </div>
+
+  <div class="wall-title">What people are saying</div>
+  <div id="wall"><div class="empty">Loading…</div></div>
+</div>
+
+<script>
+  let rating = 0;
+  fetch("/api/config").then(r=>r.json()).then(c=>{
+    if (c.projectName && c.projectName!=="our product") {
+      document.getElementById("headline").textContent = "How was your experience with " + c.projectName + "?";
+      document.title = "Share feedback for " + c.projectName;
+    }
+  }).catch(()=>{});
+
+  const stars = document.querySelectorAll("#stars .star");
+  stars.forEach(s => {
+    s.addEventListener("click", () => {
+      rating = parseInt(s.dataset.v, 10);
+      stars.forEach(x => x.classList.toggle("on", parseInt(x.dataset.v,10) <= rating));
+    });
+  });
+
+  const btn = document.getElementById("submit");
+  const msg = document.getElementById("msg");
+  btn.addEventListener("click", async () => {
+    msg.textContent = ""; msg.className = "msg";
+    const name = document.getElementById("name").value.trim();
+    const role = document.getElementById("role").value.trim();
+    const message = document.getElementById("message").value.trim();
+    if (!name || !message) { msg.textContent = "Please add your name and feedback."; msg.className="msg err"; return; }
+    if (!rating) { msg.textContent = "Please pick a star rating."; msg.className="msg err"; return; }
+    btn.disabled = true; btn.textContent = "Sharing…";
+    try {
+      const res = await fetch("/api/feedback", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({name, role, rating, message}) });
+      const data = await res.json();
+      if (!res.ok) { msg.textContent = data.error || "Something went wrong."; msg.className="msg err"; btn.disabled=false; btn.textContent="Share feedback"; return; }
+      document.getElementById("form").style.display = "none";
+      document.getElementById("thanks").classList.add("show");
+    } catch { msg.textContent = "Network error. Try again."; msg.className="msg err"; btn.disabled=false; btn.textContent="Share feedback"; }
+  });
+
+  function starRow(n){ return "★".repeat(n) + "☆".repeat(5-n); }
+  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  fetch("/api/wall").then(r=>r.json()).then(d=>{
+    const wall = document.getElementById("wall");
+    if (!d.testimonials.length) { wall.innerHTML = '<div class="empty">No testimonials yet. Be the first to share.</div>'; return; }
+    wall.innerHTML = d.testimonials.map(t =>
+      `<div class="t"><div class="stars-static">${starRow(t.rating)}</div><div class="quote">"${esc(t.message)}"</div><div class="who">${esc(t.name)}${t.role ? " — " + esc(t.role) : ""}</div></div>`
+    ).join("");
+  }).catch(()=>{ document.getElementById("wall").innerHTML = '<div class="empty">Could not load testimonials.</div>'; });
+</script>
+</body>
+</html>
