@@ -6,76 +6,485 @@
 <title>Share your feedback</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
+  /* Color Palette Themes */
   :root {
-    --paper: #f7f4ec; --ink: #1f2420; --forest: #2f6b4f; --forest-dark: #245740;
-    --line: #e2ddd0; --muted: #7a7568; --gold: #c9a227; --card: #fffdf8;
+    --paper: #f7f4ec; 
+    --ink: #1f2420; 
+    --forest: #2f6b4f; 
+    --forest-dark: #245740;
+    --line: #e2ddd0; 
+    --muted: #7a7568; 
+    --gold: #c9a227; 
+    --card: #fffdf8;
+    --shadow: rgba(47, 107, 79, 0.05);
+    --border-radius: 16px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  [data-theme="dark"] {
+    --paper: #0f172a; 
+    --ink: #f8fafc; 
+    --forest: #10b981; 
+    --forest-dark: #059669;
+    --line: #334155; 
+    --muted: #94a3b8; 
+    --gold: #fbbf24; 
+    --card: #1e293b;
+    --shadow: rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="forest"] {
+    --paper: #f0fdf4; 
+    --ink: #14532d; 
+    --forest: #16a34a; 
+    --forest-dark: #15803d;
+    --line: #bbf7d0; 
+    --muted: #166534; 
+    --gold: #ca8a04; 
+    --card: #ffffff;
+    --shadow: rgba(22, 163, 74, 0.08);
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--paper); color: var(--ink); font-family: "Inter", sans-serif; padding: 40px 20px; }
-  .wrap { max-width: 640px; margin: 0 auto; }
-  .eyebrow { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--forest); font-weight: 600; margin-bottom: 12px; text-align: center; }
-  h1 { font-family: "Newsreader", serif; font-weight: 500; font-size: 34px; text-align: center; margin-bottom: 8px; }
-  .lead { text-align: center; color: var(--muted); margin-bottom: 32px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px; margin-bottom: 40px; }
-  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; margin-top: 16px; }
-  label:first-child { margin-top: 0; }
-  input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 12px 13px; font-size: 15px; font-family: inherit; background: var(--paper); color: var(--ink); }
-  input:focus, textarea:focus { outline: none; border-color: var(--forest); }
-  textarea { resize: vertical; min-height: 90px; }
-  .stars { display: flex; gap: 6px; margin-top: 6px; }
-  .star { font-size: 30px; color: var(--line); cursor: pointer; transition: color 0.15s; line-height: 1; }
-  .star.on { color: var(--gold); }
-  button { margin-top: 22px; width: 100%; background: var(--forest); color: #fff; border: none; border-radius: 9px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  button:hover { background: var(--forest-dark); }
-  button:disabled { opacity: 0.6; }
-  .msg { text-align: center; font-size: 14px; min-height: 18px; margin-top: 12px; }
-  .msg.ok { color: var(--forest); } .msg.err { color: #b4462f; }
-  .thanks { display: none; text-align: center; padding: 30px 0; }
-  .thanks.show { display: block; }
-  .thanks .big { font-family: "Newsreader", serif; font-size: 26px; margin-bottom: 8px; }
-  .wall-title { font-family: "Newsreader", serif; font-size: 22px; text-align: center; margin-bottom: 20px; }
-  .t { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
-  .t .stars-static { color: var(--gold); font-size: 15px; margin-bottom: 8px; }
-  .t .quote { font-family: "Newsreader", serif; font-size: 17px; line-height: 1.5; margin-bottom: 10px; }
-  .t .who { font-size: 13px; color: var(--muted); font-weight: 600; }
-  .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 20px; }
+  body { background: var(--paper); color: var(--ink); font-family: "Inter", sans-serif; padding: 40px 20px; transition: background 0.3s, color 0.3s; }
+  
+  .wrap { max-width: 680px; margin: 0 auto; position: relative; }
+  
+  /* Header & Theme Switcher */
+  .header-actions { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; }
+  .theme-select {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .theme-select:hover { border-color: var(--forest); }
+
+  .eyebrow { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--forest); font-weight: 700; margin-bottom: 12px; text-align: center; }
+  h1 { font-family: "Newsreader", serif; font-weight: 500; font-size: 38px; text-align: center; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .lead { text-align: center; color: var(--muted); margin-bottom: 32px; font-size: 16px; }
+  
+  /* Form Card & Fields */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius); padding: 32px; margin-bottom: 40px; box-shadow: 0 8px 30px var(--shadow); transition: var(--transition); }
+  
+  .form-group { position: relative; margin-top: 24px; }
+  .form-group:first-child { margin-top: 0; }
+  
+  .form-group input, .form-group textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--paper);
+    color: var(--ink);
+    transition: var(--transition);
+    outline: none;
+  }
+  
+  /* Floating Label Styling */
+  .form-group label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    padding: 0 4px;
+    color: var(--muted);
+    font-size: 14px;
+    transition: var(--transition);
+    pointer-events: none;
+  }
+  
+  .form-group.focus label,
+  .form-group.filled label {
+    top: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--forest);
+    background: var(--card);
+  }
+
+  .form-group.textarea-group label {
+    top: 24px;
+  }
+  
+  .form-group.textarea-group.focus label,
+  .form-group.textarea-group.filled label {
+    top: 0;
+  }
+
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--forest);
+    box-shadow: 0 0 0 3px var(--shadow);
+  }
+
+  /* Stars Transitions & Hover styling */
+  .stars-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; display: block; margin-top: 24px; }
+  .stars { display: flex; gap: 8px; margin-bottom: 8px; }
+  .star { font-size: 34px; color: var(--line); cursor: pointer; transition: var(--transition); line-height: 1; user-select: none; }
+  .star:hover { transform: scale(1.25); text-shadow: 0 0 10px var(--gold); }
+  .star:active { transform: scale(0.9); }
+  .star.on, .star.hovered { color: var(--gold); }
+  
+  /* Interactive Chips styling */
+  .chips-container { display: none; margin-top: 18px; padding: 16px; background: var(--paper); border-radius: 12px; border: 1px dashed var(--line); animation: fadeIn 0.3s ease; }
+  .chips-container.show { display: block; }
+  .chips-title { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .chips-list { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { background: var(--card); border: 1px solid var(--line); padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: var(--transition); user-select: none; font-weight: 500; }
+  .chip:hover { border-color: var(--forest); transform: translateY(-1px); }
+  .chip.selected { background: var(--forest); color: white; border-color: var(--forest); box-shadow: 0 2px 8px var(--shadow); }
+
+  /* Textarea Wrapper & Counter */
+  .textarea-wrapper { position: relative; margin-top: 8px; }
+  textarea { resize: vertical; min-height: 120px; padding-bottom: 30px !important; }
+  
+  .progress-bar-container { width: 100%; height: 4px; background: var(--line); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .progress-bar { height: 100%; width: 0%; background: var(--forest); transition: width 0.1s ease, background-color 0.2s; }
+  
+  .char-counter-container { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .state-indicator { font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 10px; background: var(--line); color: var(--muted); transition: var(--transition); }
+  
+  .state-indicator.safe { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  .state-indicator.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+  .state-indicator.limit { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+  button { margin-top: 24px; width: 100%; background: var(--forest); color: #fff; border: none; border-radius: 10px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 8px; }
+  button:hover { background: var(--forest-dark); transform: translateY(-1px); box-shadow: 0 4px 12px var(--shadow); }
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  
+  /* Thanks Screen */
+  .thanks { display: none; text-align: center; padding: 40px 0; }
+  .thanks.show { display: block; animation: fadeIn 0.4s ease; }
+  .thanks .big { font-family: "Newsreader", serif; font-size: 32px; margin-bottom: 12px; }
+  
+  /* Interactive Wall & Stats Dashboard */
+  .wall-section { margin-top: 60px; }
+  
+  /* Stats Dashboard Card */
+  .stats-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius); padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 20px var(--shadow); display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 500px) {
+    .stats-card { grid-template-columns: 1fr 2fr; }
+  }
+  .stats-left { display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 0; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  @media (min-width: 500px) {
+    .stats-left { border-right: 1px solid var(--line); border-bottom: 0; padding-bottom: 0; }
+  }
+  .stats-avg { font-family: "Newsreader", serif; font-size: 48px; font-weight: 600; color: var(--forest); line-height: 1; }
+  .stats-stars { color: var(--gold); font-size: 18px; margin: 8px 0; }
+  .stats-count { font-size: 13px; color: var(--muted); }
+  
+  .stats-right { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .stat-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+  .stat-label { width: 45px; text-align: right; color: var(--muted); }
+  .stat-bar-bg { flex-grow: 1; height: 8px; background: var(--paper); border-radius: 4px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; background: var(--forest); border-radius: 4px; width: 0%; transition: width 0.6s ease; }
+  .stat-val { width: 30px; text-align: left; color: var(--muted); font-weight: 500; }
+
+  /* Wall Header & Filters */
+  .wall-header { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+  @media (min-width: 600px) {
+    .wall-header { flex-direction: row; justify-content: space-between; align-items: center; }
+  }
+  .wall-title { font-family: "Newsreader", serif; font-size: 26px; font-weight: 500; }
+  
+  .wall-controls { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+  @media (min-width: 600px) {
+    .wall-controls { width: auto; justify-content: flex-end; }
+  }
+  .search-input {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    outline: none;
+    transition: var(--transition);
+    flex-grow: 1;
+    max-width: 240px;
+  }
+  .search-input:focus { border-color: var(--forest); }
+  
+  .filter-select {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transition);
+  }
+  .filter-select:hover { border-color: var(--forest); }
+
+  /* Testimonials Grid */
+  #wall { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 600px) {
+    #wall { grid-template-columns: repeat(2, 1fr); }
+  }
+  
+  /* Testimonial Card & Hover Effects */
+  .t { background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px var(--shadow); transition: var(--transition); animation: fadeIn 0.4s ease; }
+  .t:hover { transform: translateY(-5px); border-color: var(--forest); box-shadow: 0 8px 24px var(--shadow); }
+  
+  .t-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .avatar-row { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--paper); color: var(--forest); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); transition: var(--transition); }
+  .t:hover .avatar { background: var(--forest); color: white; border-color: var(--forest); }
+  
+  .t .who { font-size: 13px; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .t .role-sub { font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .t .stars-static { color: var(--gold); font-size: 13px; letter-spacing: 1px; }
+  .t .quote { font-family: "Newsreader", serif; font-size: 17px; line-height: 1.5; margin-bottom: 16px; flex-grow: 1; color: var(--ink); font-style: italic; }
+  
+  .empty { text-align: center; color: var(--muted); font-size: 15px; padding: 40px 20px; grid-column: 1 / -1; }
+
+  /* Skeletons */
+  .skeleton-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius); padding: 24px; height: 180px; display: flex; flex-direction: column; justify-content: space-between; }
+  .skeleton-header { display: flex; justify-content: space-between; align-items: center; }
+  .skeleton-avatar-row { display: flex; align-items: center; gap: 12px; }
+  .skeleton-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--line); animation: pulse 1.5s infinite ease-in-out; }
+  .skeleton-who { display: flex; flex-direction: column; gap: 6px; }
+  .skeleton-line-sm { width: 80px; height: 10px; background: var(--line); border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; }
+  .skeleton-line-xs { width: 50px; height: 8px; background: var(--line); border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; }
+  .skeleton-stars { width: 60px; height: 12px; background: var(--line); border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; }
+  .skeleton-quote { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; flex-grow: 1; }
+  .skeleton-line-lg { width: 100%; height: 12px; background: var(--line); border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; }
+  .skeleton-line-md { width: 85%; height: 12px; background: var(--line); border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; }
+
+  /* Toast Notification */
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: var(--card); border: 1px solid var(--line); color: var(--ink); border-left: 4px solid var(--forest); border-radius: 8px; padding: 16px 20px; min-width: 280px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+  .toast.show { transform: translateX(0); }
+  .toast.err { border-left-color: #ef4444; }
+  .toast-close { cursor: pointer; color: var(--muted); margin-left: 12px; font-size: 16px; font-weight: bold; }
+  .toast-close:hover { color: var(--ink); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
 </style>
 </head>
 <body>
+<div class="toast-container" id="toastContainer"></div>
+
 <div class="wrap">
+  <div class="header-actions">
+    <select class="theme-select" id="themeSelect" aria-label="Select Theme">
+      <option value="warm">☀️ Warm Paper</option>
+      <option value="dark">🌙 Midnight Slate</option>
+      <option value="forest">🌲 Emerald Forest</option>
+    </select>
+  </div>
+
   <div class="eyebrow" id="eyebrow">Feedback</div>
   <h1 id="headline">How was your experience?</h1>
   <p class="lead">Your words help others decide. Thank you for sharing them.</p>
 
   <div class="card" id="formCard">
     <div id="form">
-      <label>Your name</label>
-      <input type="text" id="name" placeholder="Jane Doe" />
-      <label>Role or company <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-      <input type="text" id="role" placeholder="Founder, Acme Co." />
-      <label>Rating</label>
+      <div class="form-group" id="group-name">
+        <label for="name">Your name</label>
+        <input type="text" id="name" autocomplete="off" />
+      </div>
+      
+      <div class="form-group" id="group-role">
+        <label for="role">Role or company (optional)</label>
+        <input type="text" id="role" autocomplete="off" />
+      </div>
+      
+      <label class="stars-label">Rating</label>
       <div class="stars" id="stars">
         <span class="star" data-v="1">&#9733;</span><span class="star" data-v="2">&#9733;</span><span class="star" data-v="3">&#9733;</span><span class="star" data-v="4">&#9733;</span><span class="star" data-v="5">&#9733;</span>
       </div>
-      <label style="margin-top:16px">Your feedback</label>
-      <textarea id="message" placeholder="What did you like? What could be better?"></textarea>
-      <button id="submit">Share feedback</button>
-      <div class="msg" id="msg"></div>
+
+      <div class="chips-container" id="chipsContainer">
+        <div class="chips-title" id="chipsTitle">What stood out to you?</div>
+        <div class="chips-list" id="chipsList"></div>
+      </div>
+      
+      <div class="form-group textarea-group" id="group-message" style="margin-top: 24px;">
+        <label for="message">Your feedback</label>
+        <div class="textarea-wrapper">
+          <textarea id="message" maxlength="500"></textarea>
+        </div>
+      </div>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="char-counter-container">
+        <span id="charCounter">0 / 500 characters</span>
+        <span class="state-indicator safe" id="stateIndicator">Safe</span>
+      </div>
+
+      <button id="submit">
+        <span>Share feedback</span>
+      </button>
     </div>
+    
     <div class="thanks" id="thanks">
       <div class="big">Thank you! 🌿</div>
       <div style="color:var(--muted)">Your feedback has been received. It may appear on the wall once reviewed.</div>
     </div>
   </div>
 
-  <div class="wall-title">What people are saying</div>
-  <div id="wall"><div class="empty">Loading…</div></div>
+  <div class="wall-section">
+    <div class="stats-card" id="statsCard" style="display:none;">
+      <div class="stats-left">
+        <div class="stats-avg" id="statsAvg">0.0</div>
+        <div class="stats-stars" id="statsAvgStars">☆☆☆☆☆</div>
+        <div class="stats-count" id="statsTotal">0 reviews</div>
+      </div>
+      <div class="stats-right" id="statsBars">
+        <!-- Dynamic ratings breakdown -->
+      </div>
+    </div>
+
+    <div class="wall-header">
+      <div class="wall-title">What people are saying</div>
+      <div class="wall-controls">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search feedback..." />
+        <select class="filter-select" id="ratingFilter">
+          <option value="all">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+      </div>
+    </div>
+    
+    <div id="wall">
+      <!-- Loading Skeletons -->
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar-row">
+            <div class="skeleton-avatar"></div>
+            <div class="skeleton-who">
+              <div class="skeleton-line-sm"></div>
+              <div class="skeleton-line-xs"></div>
+            </div>
+          </div>
+          <div class="skeleton-stars"></div>
+        </div>
+        <div class="skeleton-quote">
+          <div class="skeleton-line-lg"></div>
+          <div class="skeleton-line-md"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar-row">
+            <div class="skeleton-avatar"></div>
+            <div class="skeleton-who">
+              <div class="skeleton-line-sm"></div>
+              <div class="skeleton-line-xs"></div>
+            </div>
+          </div>
+          <div class="skeleton-stars"></div>
+        </div>
+        <div class="skeleton-quote">
+          <div class="skeleton-line-lg"></div>
+          <div class="skeleton-line-md"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
   let rating = 0;
+  let allTestimonials = [];
+  const selectedTags = new Map(); // Tag text -> Phrases inserted
+
+  const positiveTags = [
+    { name: "✨ Clean Design", text: "The layout is clean and extremely easy to look at." },
+    { name: "🚀 Fast Interface", text: "Everything runs with super fast and slick response times." },
+    { name: "💬 Great Support", text: "Customer service and support are exceptionally helpful." },
+    { name: "🌱 Easy to Use", text: "The system is intuitive and user-friendly from start to finish." }
+  ];
+  
+  const negativeTags = [
+    { name: "🐛 Found a Bug", text: "I ran into a small bug that could be polished up." },
+    { name: "🐌 Slow Loading", text: "Certain page loads felt a little bit sluggish." },
+    { name: "🧭 Confusing Layout", text: "A couple of buttons in the layout were hard to track." },
+    { name: "📝 Needs Info", text: "Adding some extra tooltips or documentation would help." }
+  ];
+
+  // Theme Management
+  const themeSelect = document.getElementById("themeSelect");
+  const currentTheme = localStorage.getItem("vouch-theme") || "warm";
+  setTheme(currentTheme);
+  themeSelect.value = currentTheme;
+
+  themeSelect.addEventListener("change", (e) => {
+    setTheme(e.target.value);
+  });
+
+  function setTheme(theme) {
+    if (theme === "warm") {
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+    localStorage.setItem("vouch-theme", theme);
+  }
+
+  // Floating Labels Behavior
+  const inputs = document.querySelectorAll(".form-group input, .form-group textarea");
+  inputs.forEach(input => {
+    const parent = input.closest(".form-group");
+    
+    // Check if initial value exists
+    if (input.value.trim() !== "") {
+      parent.classList.add("filled");
+    }
+    
+    input.addEventListener("focus", () => {
+      parent.classList.add("focus");
+    });
+    
+    input.addEventListener("blur", () => {
+      parent.classList.remove("focus");
+      if (input.value.trim() !== "") {
+        parent.classList.add("filled");
+      } else {
+        parent.classList.remove("filled");
+      }
+    });
+
+    input.addEventListener("input", () => {
+      if (input.value.trim() !== "") {
+        parent.classList.add("filled");
+      } else {
+        parent.classList.remove("filled");
+      }
+    });
+  });
+
+  // Dynamic config fetch
   fetch("/api/config").then(r=>r.json()).then(c=>{
     if (c.projectName && c.projectName!=="our product") {
       document.getElementById("headline").textContent = "How was your experience with " + c.projectName + "?";
@@ -83,42 +492,268 @@
     }
   }).catch(()=>{});
 
+  // Toast Notification System
+  function showToast(message, isError = false) {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    toast.className = `toast ${isError ? 'err' : ''}`;
+    toast.innerHTML = `
+      <span>${message}</span>
+      <span class="toast-close">&times;</span>
+    `;
+    container.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => toast.classList.add("show"), 10);
+    
+    const dismiss = () => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    };
+
+    toast.querySelector(".toast-close").addEventListener("click", dismiss);
+    setTimeout(dismiss, 4000);
+  }
+
+  // Dynamic Stars Hover and Selection Logic
   const stars = document.querySelectorAll("#stars .star");
   stars.forEach(s => {
+    s.addEventListener("mouseenter", () => {
+      const hoverVal = parseInt(s.dataset.v, 10);
+      stars.forEach(x => x.classList.toggle("hovered", parseInt(x.dataset.v, 10) <= hoverVal));
+    });
+
+    s.addEventListener("mouseleave", () => {
+      stars.forEach(x => x.classList.remove("hovered"));
+    });
+
     s.addEventListener("click", () => {
       rating = parseInt(s.dataset.v, 10);
-      stars.forEach(x => x.classList.toggle("on", parseInt(x.dataset.v,10) <= rating));
+      stars.forEach(x => x.classList.toggle("on", parseInt(x.dataset.v, 10) <= rating));
+      renderChips(rating);
     });
   });
 
+  // Render Conditional Micro-Feedback Tag Chips
+  function renderChips(rate) {
+    const container = document.getElementById("chipsContainer");
+    const list = document.getElementById("chipsList");
+    const title = document.getElementById("chipsTitle");
+    list.innerHTML = "";
+    selectedTags.clear();
+
+    const targetTags = rate >= 4 ? positiveTags : negativeTags;
+    title.textContent = rate >= 4 ? "What did you love most?" : "What can we improve?";
+
+    targetTags.forEach(tagObj => {
+      const el = document.createElement("span");
+      el.className = "chip";
+      el.textContent = tagObj.name;
+      
+      el.addEventListener("click", () => {
+        const isSelected = el.classList.toggle("selected");
+        const textarea = document.getElementById("message");
+        let textVal = textarea.value;
+
+        if (isSelected) {
+          selectedTags.set(tagObj.name, tagObj.text);
+          // Auto-append sentence neatly
+          if (textVal.trim().length > 0) {
+            textarea.value = textVal.trim() + " " + tagObj.text;
+          } else {
+            textarea.value = tagObj.text;
+          }
+        } else {
+          // Remove inserted sentence
+          const phrase = selectedTags.get(tagObj.name);
+          if (phrase) {
+            textarea.value = textVal.replace(phrase, "").replace(/\s+/g, " ").trim();
+            selectedTags.delete(tagObj.name);
+          }
+        }
+        
+        // Trigger input event to update counter
+        textarea.dispatchEvent(new Event("input"));
+        
+        // Ensure floating label stays synced
+        const parent = textarea.closest(".form-group");
+        if (textarea.value.trim() !== "") {
+          parent.classList.add("filled");
+        } else {
+          parent.classList.remove("filled");
+        }
+      });
+      list.appendChild(el);
+    });
+    container.classList.add("show");
+  }
+
+  // Live Character Counter Logic with Progress and State Indicators
+  const messageInput = document.getElementById("message");
+  const charCounter = document.getElementById("charCounter");
+  const progressBar = document.getElementById("progressBar");
+  const stateIndicator = document.getElementById("stateIndicator");
+
+  messageInput.addEventListener("input", () => {
+    const len = messageInput.value.length;
+    charCounter.textContent = `${len} / 500 characters`;
+    
+    // Update progress bar width
+    const percentage = (len / 500) * 100;
+    progressBar.style.width = `${percentage}%`;
+
+    // Colors and State Indicators based on length
+    if (len >= 475) {
+      progressBar.style.backgroundColor = "var(--red, #ef4444)";
+      stateIndicator.textContent = "Limit";
+      stateIndicator.className = "state-indicator limit";
+    } else if (len >= 350) {
+      progressBar.style.backgroundColor = "var(--gold)";
+      stateIndicator.textContent = "Warning";
+      stateIndicator.className = "state-indicator warning";
+    } else {
+      progressBar.style.backgroundColor = "var(--forest)";
+      stateIndicator.textContent = "Safe";
+      stateIndicator.className = "state-indicator safe";
+    }
+  });
+
+  // Form Submit Action
   const btn = document.getElementById("submit");
-  const msg = document.getElementById("msg");
   btn.addEventListener("click", async () => {
-    msg.textContent = ""; msg.className = "msg";
     const name = document.getElementById("name").value.trim();
     const role = document.getElementById("role").value.trim();
-    const message = document.getElementById("message").value.trim();
-    if (!name || !message) { msg.textContent = "Please add your name and feedback."; msg.className="msg err"; return; }
-    if (!rating) { msg.textContent = "Please pick a star rating."; msg.className="msg err"; return; }
-    btn.disabled = true; btn.textContent = "Sharing…";
+    const message = messageInput.value.trim();
+    
+    if (!name || !message) { showToast("Please fill in both your name and feedback.", true); return; }
+    if (!rating) { showToast("Please pick a star rating.", true); return; }
+
+    btn.disabled = true;
+    const btnSpan = btn.querySelector("span");
+    btnSpan.textContent = "Sharing…";
+    
     try {
-      const res = await fetch("/api/feedback", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({name, role, rating, message}) });
+      const res = await fetch("/api/feedback", { 
+        method:"POST", 
+        headers:{"Content-Type":"application/json"}, 
+        body: JSON.stringify({name, role, rating, message}) 
+      });
       const data = await res.json();
-      if (!res.ok) { msg.textContent = data.error || "Something went wrong."; msg.className="msg err"; btn.disabled=false; btn.textContent="Share feedback"; return; }
+      if (!res.ok) { 
+        showToast(data.error || "Something went wrong.", true); 
+        btn.disabled = false; 
+        btnSpan.textContent = "Share feedback"; 
+        return; 
+      }
+      
       document.getElementById("form").style.display = "none";
       document.getElementById("thanks").classList.add("show");
-    } catch { msg.textContent = "Network error. Try again."; msg.className="msg err"; btn.disabled=false; btn.textContent="Share feedback"; }
+      showToast("Thank you! Your feedback was shared successfully.");
+    } catch { 
+      showToast("Network error. Please try again.", true);
+      btn.disabled = false; 
+      btnSpan.textContent = "Share feedback"; 
+    }
   });
+
+  // Helpers
+  function getInitials(name) {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "👤";
+  }
 
   function starRow(n){ return "★".repeat(n) + "☆".repeat(5-n); }
   function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-  fetch("/api/wall").then(r=>r.json()).then(d=>{
+  
+  // Calculate Stats Distribution
+  function renderStats(testimonials) {
+    const statsCard = document.getElementById("statsCard");
+    if (!testimonials.length) {
+      statsCard.style.display = "none";
+      return;
+    }
+    
+    statsCard.style.display = "grid";
+    const total = testimonials.length;
+    const sum = testimonials.reduce((acc, t) => acc + t.rating, 0);
+    const avg = (sum / total).toFixed(1);
+    
+    document.getElementById("statsAvg").textContent = avg;
+    document.getElementById("statsAvgStars").textContent = starRow(Math.round(avg));
+    document.getElementById("statsTotal").textContent = `${total} ${total === 1 ? 'review' : 'reviews'}`;
+    
+    // Breakdown count
+    const counts = { 5:0, 4:0, 3:0, 2:0, 1:0 };
+    testimonials.forEach(t => { if (counts[t.rating] !== undefined) counts[t.rating]++; });
+    
+    const barsContainer = document.getElementById("statsBars");
+    barsContainer.innerHTML = [5, 4, 3, 2, 1].map(stars => {
+      const count = counts[stars];
+      const pct = total > 0 ? ((count / total) * 100).toFixed(0) : 0;
+      return `
+        <div class="stat-row">
+          <div class="stat-label">${stars} Star</div>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${pct}%"></div></div>
+          <div class="stat-val">${count}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Render Testimonials wall
+  function renderWall(testimonials) {
     const wall = document.getElementById("wall");
-    if (!d.testimonials.length) { wall.innerHTML = '<div class="empty">No testimonials yet. Be the first to share.</div>'; return; }
-    wall.innerHTML = d.testimonials.map(t =>
-      `<div class="t"><div class="stars-static">${starRow(t.rating)}</div><div class="quote">"${esc(t.message)}"</div><div class="who">${esc(t.name)}${t.role ? " — " + esc(t.role) : ""}</div></div>`
+    if (!testimonials.length) {
+      wall.innerHTML = '<div class="empty">No matching testimonials found.</div>';
+      return;
+    }
+    
+    wall.innerHTML = testimonials.map(t => `
+      <div class="t">
+        <div class="t-header">
+          <div class="avatar-row">
+            <div class="avatar">${getInitials(esc(t.name))}</div>
+            <div class="who">
+              <div>${esc(t.name)}</div>
+              ${t.role ? `<div class="role-sub">${esc(t.role)}</div>` : ''}
+            </div>
+          </div>
+          <div class="stars-static">${starRow(t.rating)}</div>
+        </div>
+        <div class="quote">"${esc(t.message)}"</div>
+      </div>`
     ).join("");
-  }).catch(()=>{ document.getElementById("wall").innerHTML = '<div class="empty">Could not load testimonials.</div>'; });
+  }
+
+  // Filter & Search Handler
+  function filterAndSearch() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const ratingFilter = document.getElementById("ratingFilter").value;
+    
+    const filtered = allTestimonials.filter(t => {
+      const matchesSearch = t.name.toLowerCase().includes(query) || 
+                            (t.role && t.role.toLowerCase().includes(query)) ||
+                            t.message.toLowerCase().includes(query);
+      const matchesRating = ratingFilter === "all" || t.rating === parseInt(ratingFilter, 10);
+      return matchesSearch && matchesRating;
+    });
+    
+    renderWall(filtered);
+  }
+
+  document.getElementById("searchInput").addEventListener("input", filterAndSearch);
+  document.getElementById("ratingFilter").addEventListener("change", filterAndSearch);
+
+  // Fetch Testimonials
+  fetch("/api/wall")
+    .then(r => r.json())
+    .then(d => {
+      allTestimonials = d.testimonials || [];
+      renderStats(allTestimonials);
+      renderWall(allTestimonials);
+    })
+    .catch(() => {
+      document.getElementById("wall").innerHTML = '<div class="empty">Could not load testimonials.</div>';
+    });
 </script>
 </body>
 </html>
