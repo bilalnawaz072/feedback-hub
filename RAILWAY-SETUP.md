@@ -1,9 +1,9 @@
-# Railway setup — Vouch
+# Railway setup — Feedback Hub
 
 Everything you need to publish this template. Same flow you used for Launchlist.
 
 ## Step 1 — GitHub
-Create a new **public** repo named `vouch` and upload the files from this folder so they
+Create a new **public** repo named `feedback-hub` and upload the files from this folder so they
 sit at the **top level** of the repo (not nested inside another folder).
 
 In `README.md`, replace `YOUR_GITHUB` in the Source line with your GitHub username.
@@ -11,12 +11,12 @@ In `README.md`, replace `YOUR_GITHUB` in the Source line with your GitHub userna
 ## Step 2 — Create the Railway template
 Railway → **Templates → + New**, then on the SAME canvas add BOTH of these before saving:
 
-1. **Service 1 — GitHub repo:** select `vouch`
+1. **Service 1 — GitHub repo:** select `Feedback Hub`
 2. **Service 2 — Database:** Add → Database → **PostgreSQL**
    (leave it named `Postgres` — capital P — do not rename)
 
 ## Step 3 — Set variables on the app service
-Click the **Vouch** service (the GitHub one) → Variables → add these three exactly:
+Click the **feedback-hub** service (the GitHub one) → Variables → add these three exactly:
 
 | Variable | Value |
 |----------|-------|
@@ -31,7 +31,7 @@ Confirm BOTH services show on the canvas, then click **Save**.
 ## Step 4 — Publish
 Templates list → **Publish** on this template, then:
 
-- **Name:** `Vouch`
+- **Name:** `Feedback Hub`
 - **Short description:** `Self-hosted feedback and testimonial wall`
 - **Category:** Starters
 - **Long description:** paste the contents of `README.md` (it already starts with the required
